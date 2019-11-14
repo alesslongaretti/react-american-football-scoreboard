@@ -1,5 +1,5 @@
 //TODO: STEP 1 - Import the useState hook.
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import "./App.css";
 import BottomRow from "./BottomRow";
 
@@ -15,7 +15,7 @@ function App() {
 
   const fieldHome = event => {
     sethome(home +3);
-    // setAway(away + 3);
+   
   };
 
   const [away, setAway] = useState(0);
@@ -28,6 +28,37 @@ function App() {
     setAway(away + 3);
   }
 
+  // Timer
+
+
+  const[timer, setTimer] = useState(60);
+  const [isActive, setIsActive] = useState(false);
+
+  function toggle () {
+    setIsActive(!isActive);
+  }
+
+  function reset () {
+    setTimer(60);
+    setIsActive(false);
+  }
+
+  useEffect(() => {
+    let interval = null;
+    if (isActive) {
+      interval = setInterval(() => {
+        setTimer(timer => timer - 1 );
+      }, 1000);
+    } if (timer === 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, timer]);
+
+
+
+
+
   return (
     <div className="container">
       <section className="scoreboard">
@@ -39,7 +70,7 @@ function App() {
 
             <div className="home__score">{home}</div>
           </div>
-          <div className="timer">00:03</div>
+          <div className="timer">{timer}</div>
           <div className="away">
             <h2 className="away__name">Tigers</h2>
             <div className="away__score">{away}</div>
@@ -57,6 +88,11 @@ function App() {
           <button className="awayButtons__touchdown" onClick = {touchAway}>Away Touchdown</button>
           <button className="awayButtons__fieldGoal" onClick = {fieldAway}>Away Field Goal</button>
         </div>
+        <div className="homeButtons">
+          <button className={`homeButtons_touchdown${isActive ? 'active' : 'inactive'}`} onClick={toggle}>{isActive ? 'pause' : 'Start'}</button>
+          <button className="homeButtons_fieldGoal" onClick= {reset}>Reset</button>
+        </div>
+        
       </section>
     </div>
   );
